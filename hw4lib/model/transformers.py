@@ -153,9 +153,9 @@ class DecoderOnlyTransformer(nn.Module):
         # TODO: Implement forward
 
         # TODO: Create padding mask for padded_targets on the same device as the input (use PadMask)
-        pad_mask_dec = PadMask(padded_targets, target_lengths)
+        pad_mask_dec = None
         if target_lengths is not None:
-            pad_mask_dec = pad_mask_dec = pad_mask_dec.to(padded_targets.device)
+            pad_mask_dec = PadMask(padded_targets, target_lengths)
         
         # TODO: Create causal mask to prevent attending to future tokens on the same device as the input (use CausalMask)
         causal_mask = CausalMask(padded_targets)
