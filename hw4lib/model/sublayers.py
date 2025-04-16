@@ -153,7 +153,7 @@ class CrossAttentionLayer(nn.Module):
         )
         
         # NOTE: For some regularization you can apply dropout and then add residual connection
-        x_out = residual + self.dropout(x_attn)
+        x_out = residual + self.dropout(x)
         # TODO: Return the output tensor and attention weights
         return x_out, mha_attn_weights# Remove once implemented
     
