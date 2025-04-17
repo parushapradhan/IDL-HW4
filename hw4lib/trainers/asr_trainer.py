@@ -436,7 +436,7 @@ class ASRTrainer(BaseTrainer):
                         temperature=recognition_config['temperature'],
                         repeat_penalty=recognition_config['repeat_penalty']
                     )
-                    raise NotImplementedError # Remove if you implemented the beam search method
+                    # raise NotImplementedError # Remove if you implemented the beam search method
                     # Pick best beam
                     seqs = seqs[:, 0, :]
                     scores = scores[:, 0]
