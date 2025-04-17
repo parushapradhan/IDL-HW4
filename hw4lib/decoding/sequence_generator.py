@@ -237,7 +237,71 @@ class SequenceGenerator:
             raise ValueError("max_length must be >= input sequence length")
         
         # TODO: Implement beam search
-        raise NotImplementedError # Remove once implemented
+        B, cur_len = x.size()
+        V = self.tokenizer.vocab_size  # or next_logits.size(-1) after score_fn
+        device = x.device
+
+        # (2) Initial scoring
+        # logits: (B, V)
+        logits = self.score_fn(x)
+        if repeat_penalty != 1.0:
+            logits = self._apply_repeat_penalty(logits, x, penalty=repeat_penalty)
+        logits = logits / temperature
+        log_probs = torch.log_softmax(logits, dim=-1)  # (B, V)
+
+        # select top‐k initial tokens
+        topk_scores, topk_tokens = log_probs.topk(beam_width, dim=-1)  # both (B, beam_width)
+
+        # initialize beam sequences (B, beam, cur_len+1)
+        # expand x to (B, beam, cur_len)
+        x_beams = x.unsqueeze(1).expand(B, beam_width, cur_len).clone()
+        # append the first tokens
+        x_beams = torch.cat([x_beams, topk_tokens.unsqueeze(-1)], dim=-1)
+        scores = topk_scores  # (B, beam_width)
+        finished = topk_tokens == self.tokenizer.eos_id
+
+        cur_len += 1
+
+        # (3) Iterative expansion
+        for _ in range(cur_len, self.max_length):
+            if finished.all():
+                break
+
+            # for each beam: compute next‐step logits
+            flat_beams = x_beams.reshape(B * beam_width, cur_len)
+            next_logits = self.score_fn(flat_beams)  # (B*beam, V)
+            next_logits = next_logits.view(B, beam_width, V)
+
+            if repeat_penalty != 1.0:
+                next_logits = self._apply_repeat_penalty(next_logits, x_beams, penalty=repeat_penalty)
+
+            scaled = next_logits / temperature
+            next_log_probs = torch.log_softmax(scaled, dim=-1)  # (B, beam, V)
+
+            # accumulate scores: (B, beam, V)
+            total_scores = scores.unsqueeze(-1) + next_log_probs
+
+            # flatten beams: (B, beam*V)
+            flat_scores, flat_indices = total_scores.view(B, -1).topk(beam_width, dim=-1)
+
+            # decode beam & token indices
+            beam_idx   = flat_indices // V       # (B, beam)
+            token_idx  = flat_indices % V        # (B, beam)
+
+            # gather corresponding sequences
+            idx_expand = beam_idx.unsqueeze(-1).expand(-1, -1, cur_len)
+            x_prev     = torch.gather(x_beams, 1, idx_expand)  # (B, beam, cur_len)
+
+            # append new tokens
+            x_beams    = torch.cat([x_prev, token_idx.unsqueeze(-1)], dim=-1)  # (B, beam, cur_len+1)
+            scores     = flat_scores
+            cur_len   += 1
+
+            # update finished flags
+            eos_hits = token_idx == self.tokenizer.eos_id
+            finished = finished | eos_hits
+
+        return x_beams,scores # Remove once implemented
 
     def generate_sample(
             self,
