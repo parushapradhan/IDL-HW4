@@ -157,6 +157,8 @@ class SequenceGenerator:
              - scores is of shape (batch_size,)
         """
         # Add input validation
+        print(">>> GREEDY: called with x.shape=", x.shape, "max_length=", self.max_length, flush=True)
+
         if not torch.is_tensor(x):
             raise TypeError("Input x must be a torch tensor")
         if x.dim() != 2:
@@ -174,7 +176,7 @@ class SequenceGenerator:
             # Stop if all sequences have already reached EOS
             if finished.all():
                 break
-
+            
             # (a) Obtain logits for next token (shape: (B, vocab_size))
             next_logits = self.score_fn(current_seq)
 
