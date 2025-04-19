@@ -383,7 +383,7 @@ class ASRTrainer(BaseTrainer):
                 'lm_weight': 0.0,
                 'lm_model': None
             }
-            config_name = 'greedy'
+            config_name = 'beam'
 
         if recognition_config.get('lm_model') is not None:
             recognition_config['lm_model'].eval()
