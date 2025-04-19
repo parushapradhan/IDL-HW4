@@ -438,8 +438,10 @@ class ASRTrainer(BaseTrainer):
                 )
 
                 # TODO: Generate sequences
+                print("Recognition config",recognition_config['beam_width'], flush=True)
                 if recognition_config['beam_width'] > 1:
                     # TODO: If you have implemented beam search, generate sequences using beam search
+                    print("Beam search", flush=True)
                     seqs, scores = generator.generate_beam(
                         prompts,
                         recognition_config['beam_width'],
@@ -452,6 +454,7 @@ class ASRTrainer(BaseTrainer):
                     scores = scores[:, 0]
                 else:
                     # TODO: Generate sequences using greedy search
+                    print("Beam search", flush=True)
                     seqs, scores = generator.generate_greedy(
                         prompts,
                         temperature=recognition_config['temperature'],
