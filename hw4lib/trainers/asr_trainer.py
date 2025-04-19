@@ -439,27 +439,27 @@ class ASRTrainer(BaseTrainer):
 
                 # TODO: Generate sequences
                 print("Recognition config",recognition_config['beam_width'], flush=True)
-                if recognition_config['beam_width'] > 1:
+                # if recognition_config['beam_width'] > 1:
                     # TODO: If you have implemented beam search, generate sequences using beam search
-                    print("Beam search", flush=True)
-                    seqs, scores = generator.generate_beam(
-                        prompts,
-                        recognition_config['beam_width'],
-                        temperature=recognition_config['temperature'],
-                        repeat_penalty=recognition_config['repeat_penalty']
-                    )
-                    # raise NotImplementedError # Remove if you implemented the beam search method
-                    # Pick best beam
-                    seqs = seqs[:, 0, :]
-                    scores = scores[:, 0]
-                else:
-                    # TODO: Generate sequences using greedy search
-                    print("Beam search", flush=True)
-                    seqs, scores = generator.generate_greedy(
-                        prompts,
-                        temperature=recognition_config['temperature'],
-                        repeat_penalty=recognition_config['repeat_penalty']
-                    )
+                print("Beam search", flush=True)
+                seqs, scores = generator.generate_beam(
+                    prompts,
+                    recognition_config['beam_width'],
+                    temperature=recognition_config['temperature'],
+                    repeat_penalty=recognition_config['repeat_penalty']
+                )
+                # raise NotImplementedError # Remove if you implemented the beam search method
+                # Pick best beam
+                seqs = seqs[:, 0, :]
+                scores = scores[:, 0]
+                # else:
+                #     # TODO: Generate sequences using greedy search
+                #     print("Greedy search", flush=True)
+                #     seqs, scores = generator.generate_greedy(
+                #         prompts,
+                #         temperature=recognition_config['temperature'],
+                #         repeat_penalty=recognition_config['repeat_penalty']
+                #     )
                     # raise NotImplementedError # Remove if you implemented the greedy search method
 
                 # Clean up
