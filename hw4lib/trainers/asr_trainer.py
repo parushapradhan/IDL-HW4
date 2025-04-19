@@ -221,7 +221,9 @@ class ASRTrainer(BaseTrainer):
         # raise NotImplementedError # Remove once implemented
 
         # TODO: Call recognize
-        results = self.recognize(dataloader)
+        beam10_cfg = self._get_evaluation_recognition_configs()['beam_10']
+
+        results = self.recognize(dataloader,recognition_config=beam10_cfg,config_name='beam_10')
         
         # TODO: Extract references and hypotheses from results
         references = [r['target']    for r in results if 'target'    in r]
