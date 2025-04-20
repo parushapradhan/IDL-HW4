@@ -223,7 +223,8 @@ class ASRTrainer(BaseTrainer):
         # TODO: Call recognize
         beam10_cfg = self._get_evaluation_recognition_configs()['beam_10']
 
-        results = self.recognize(dataloader,recognition_config=beam10_cfg,config_name='beam_10')
+        # results = self.recognize(dataloader,recognition_config=beam10_cfg,config_name='beam_10')
+        results = self.recognize(dataloader)
         
         # TODO: Extract references and hypotheses from results
         references = [r['target']    for r in results if 'target'    in r]
@@ -379,7 +380,7 @@ class ASRTrainer(BaseTrainer):
             # Default config (greedy search)
             recognition_config = {
                 'num_batches': 5,
-                'beam_width': 10,
+                'beam_width': 1,
                 'temperature': 1.0,
                 'repeat_penalty': 1.0,
                 'lm_weight': 0.0,
@@ -438,28 +439,28 @@ class ASRTrainer(BaseTrainer):
                 )
 
                 # TODO: Generate sequences
-                print("Recognition config",recognition_config['beam_width'], flush=True)
-                # if recognition_config['beam_width'] > 1:
+        
+                if recognition_config['beam_width'] > 1:
                     # TODO: If you have implemented beam search, generate sequences using beam search
-                print("Beam search", flush=True)
-                seqs, scores = generator.generate_beam(
-                    prompts,
-                    recognition_config['beam_width'],
-                    temperature=recognition_config['temperature'],
-                    repeat_penalty=recognition_config['repeat_penalty']
-                )
-                # raise NotImplementedError # Remove if you implemented the beam search method
-                # Pick best beam
-                seqs = seqs[:, 0, :]
-                scores = scores[:, 0]
-                # else:
-                #     # TODO: Generate sequences using greedy search
-                #     print("Greedy search", flush=True)
-                #     seqs, scores = generator.generate_greedy(
-                #         prompts,
-                #         temperature=recognition_config['temperature'],
-                #         repeat_penalty=recognition_config['repeat_penalty']
-                #     )
+               
+                    seqs, scores = generator.generate_beam(
+                        prompts,
+                        recognition_config['beam_width'],
+                        temperature=recognition_config['temperature'],
+                        repeat_penalty=recognition_config['repeat_penalty']
+                    )
+                    # raise NotImplementedError # Remove if you implemented the beam search method
+                    # Pick best beam
+                    seqs = seqs[:, 0, :]
+                    scores = scores[:, 0]
+                else:
+                    # TODO: Generate sequences using greedy search
+         
+                    seqs, scores = generator.generate_greedy(
+                        prompts,
+                        temperature=recognition_config['temperature'],
+                        repeat_penalty=recognition_config['repeat_penalty']
+                    )
                     # raise NotImplementedError # Remove if you implemented the greedy search method
 
                 # Clean up
