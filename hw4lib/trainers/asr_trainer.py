@@ -223,8 +223,8 @@ class ASRTrainer(BaseTrainer):
         # TODO: Call recognize
         beam10_cfg = self._get_evaluation_recognition_configs()['beam_10']
 
-        # results = self.recognize(dataloader,recognition_config=beam10_cfg,config_name='beam_10')
-        results = self.recognize(dataloader)
+        results = self.recognize(dataloader,recognition_config=beam10_cfg,config_name='beam_10')
+        # results = self.recognize(dataloader)
         
         # TODO: Extract references and hypotheses from results
         references = [r['target']    for r in results if 'target'    in r]
