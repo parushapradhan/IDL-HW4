@@ -157,7 +157,6 @@ class SequenceGenerator:
              - scores is of shape (batch_size,)
         """
         # Add input validation
-        print(">>> GREEDY: called with x.shape=", x.shape, "max_length=", self.max_length, flush=True)
 
         if not torch.is_tensor(x):
             raise TypeError("Input x must be a torch tensor")
