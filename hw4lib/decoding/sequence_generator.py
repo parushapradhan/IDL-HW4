@@ -322,7 +322,6 @@ class SequenceGenerator:
             - sorted_sequences has shape (batch_size, beam_width, max_length)
             - sorted_scores has shape (batch_size, beam_width)
         """
-        print(">>> BEAM: called with x.shape=", x.shape, "max_length=", self.max_length, flush=True)
         if not torch.is_tensor(x):
             raise TypeError("Input x must be a torch tensor")
         if x.dim() != 2:
